@@ -11,7 +11,16 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QTcpSocket>
+#include <QGroupBox>
+#include <mutex>
+#include <condition_variable>
+#include <thread>
+#include <QComboBox>
 
+QT_BEGIN_NAMESPACE
+class QLabel;
+class QImage;
+QT_END_NAMESPACE
 #include "dialog.h"
 
 namespace Ui {
@@ -28,21 +37,45 @@ public:
 
 private:
     Ui::Widget *ui;
-    QPushButton *snedBtn;
+    QPushButton *sendBtn;
     QPushButton *connectBtn;
     QVBoxLayout *mainLayout;
     QGridLayout *gridLayout;
     QLineEdit *ipEditor;
-    QTextEdit *msgEditor;
     QMenuBar *menuBar;
     QMenu   *toolMenu;
     QAction *connectAction;
     Dialog *dialog;
     QTcpSocket *socket;
+    QLabel *imageLabel;
+    QImage *jpegImage;
+    std::mutex m_mutex;
+    std::thread *m_pthread;
+    std::thread *m_pshow;
+    std::condition_variable cv;
+    QComboBox *ispComboBox;
 
     void createMenu();
+    void createEditor();
+    void connectSlot();
+    void workerThread();
+    void showThread();
 private slots:
     void connectToServer();
+    void EnableSendBtn();
+    void readSocket();
+    void sendMsg();
+    void ispCaseChanged(int);
+    void showImage();
+
+signals:
+    void showImageSignal();
+protected:
+    QByteArray recvData;
+    QByteArray jpegData;
+    bool flag;
+    bool running;
+    bool splitJpeg();
 };
 
 #endif // WIDGET_H

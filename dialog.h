@@ -27,6 +27,8 @@ private:
     QHBoxLayout *mainLayout;
 public slots:
     void connectToServer();
+    void dispalyError(QAbstractSocket::SocketError socketError);
+    void closeDialog();
 };
 
 #endif // DIALOG_H
